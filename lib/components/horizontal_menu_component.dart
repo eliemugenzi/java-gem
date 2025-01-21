@@ -36,7 +36,7 @@ class _HorizontalMenuState extends State<HorizontalMenu> {
                 onPressed: () {},
               ))
             : (OutlinedButton(
-              style: ButtonStyle(backgroundColor: WidgetStateProperty.all(Colors.transparent), ),
+              style: ButtonStyle(backgroundColor: WidgetStateProperty.all(Colors.white), ),
                 onPressed: () {
                   widget.onSelect!(value);
                 },

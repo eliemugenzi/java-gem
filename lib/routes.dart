@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:javagem/screens/cofee_details_screen.dart';
 import 'package:javagem/screens/home_screen.dart';
 import 'package:javagem/screens/login_screen.dart';
 import 'package:javagem/screens/welcome_screen.dart';
@@ -19,6 +20,10 @@ final GoRouter router = GoRouter(
         pageBuilder: (context, state) => MaterialPage(child: LoginScreen())),
     GoRoute(
         path: Routes.home,
-        pageBuilder: (context, state) => MaterialPage(child: HomeScreen()))
+        pageBuilder: (context, state) => MaterialPage(child: HomeScreen())),
+    GoRoute(
+        path: Routes.coffeeDetails,
+        pageBuilder: (context, state) =>
+            MaterialPage(child: CoffeeDetailsScreen()))
   ],
 );

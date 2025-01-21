@@ -18,6 +18,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
       routerConfig: router,
+      theme: ThemeData(
+        fontFamily: 'Rubik'
+      ),
     );
 }
 }

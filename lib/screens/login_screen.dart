@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 import 'package:javagem/components/textinput_component.dart';
+import 'package:javagem/utils/colors.dart';
 import 'package:javagem/utils/constants.dart';
+import 'package:javagem/utils/notifiers/login_notifier.dart';
 import 'package:javagem/utils/styles.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginScreen extends ConsumerWidget {
+  LoginScreen({super.key});
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loginState = ref.watch(loginProvider);
+    final formKey = GlobalKey<FormBuilderState>();
 
-class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormBuilderState>();
-  @override
-  Widget build(BuildContext context) {
+    ref.listen<LoginState>(loginProvider, (previousState, currentState) {
+      if (currentState.token != null) {
+        context.go(Routes.home);
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Welcome back'),
@@ -33,12 +40,12 @@ class _LoginScreenState extends State<LoginScreen> {
           child: SingleChildScrollView(
         child: Center(
             child: FormBuilder(
-          key: _formKey,
+          key: formKey,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 50),
             child: Column(
               children: <Widget>[
-                 const SizedBox(
+                const SizedBox(
                   height: 50.0,
                 ),
                 const Text(
@@ -58,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   label: 'Email address',
                   placeholder: 'Email address',
                   onChanged: (String? value) {
-                    _formKey.currentState?.fields['email']?.validate();
+                    formKey.currentState?.fields['email']?.validate();
                   },
                   validator: FormBuilderValidators.compose(
                     [
@@ -75,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   label: 'Password',
                   placeholder: 'Password',
                   onChanged: (String? value) {
-                    _formKey.currentState?.fields['password']?.validate();
+                    formKey.currentState?.fields['password']?.validate();
                   },
                   validator: FormBuilderValidators.compose(
                     [
@@ -91,9 +98,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       context.go(Routes.login);
-                      if (_formKey.currentState?.saveAndValidate() ?? false) {
+                      if (formKey.currentState?.saveAndValidate() ?? false) {
                         //? Validations are passing...
-                        context.go(Routes.home);
+
+                        ref.read(loginProvider.notifier).login(
+                              emailController.text,
+                              passwordController.text,
+                            );
 
                       } else {
                         debugPrint('Validation failed');
@@ -103,6 +114,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text('Login'),
                   ),
                 ),
+                SizedBox(
+                  height: 20,
+                ),
+                if (loginState.isLoading)
+                  const CircularProgressIndicator(
+                    color: AppColors.primary,
+                  ),
+                SizedBox(
+                  height: 20,
+                ),
+                if (loginState.error != null)
+                  Text(
+                    loginState.error!,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                
+
               ],
             ),
           ),
